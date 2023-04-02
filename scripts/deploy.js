@@ -7,21 +7,19 @@
 const hre = require("hardhat");
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
 
-  const lockedAmount = hre.ethers.utils.parseEther("0.001");
+  const [signer] = await hre.ethers.getSigners()
+  
+  const ERC20 = await ethers.getContractFactory("MyToken", signer)
+  erc20 = await ERC20.deploy()
+  await erc20.deployed()
 
-  const Lock = await hre.ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
+  const NFTMarket = await ethers.getContractFactory("MarketNFT", signer)
+  market = await NFTMarket.deploy(erc20.address)
+  await market.deployed()
 
-  await lock.deployed();
-
-  console.log(
-    `Lock with ${ethers.utils.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`
-  );
+  console.log(erc20.address);
+  console.log(market.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
@@ -30,3 +28,12 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
+
+// 0xf95ff20C4A0821B1B9303c187fF1ce512392625F
+// 0xB5a1A8A378Aed3F8edA6E97d96100d54b00d7fB0
+
+// Successfully verified contract MyToken on Etherscan.
+// https://sepolia.etherscan.io/address/0xf95ff20C4A0821B1B9303c187fF1ce512392625F#code
+
+// Successfully verified contract MarketNFT on Etherscan.
+// https://sepolia.etherscan.io/address/0xB5a1A8A378Aed3F8edA6E97d96100d54b00d7fB0#code
